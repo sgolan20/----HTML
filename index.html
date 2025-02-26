@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Experience Survey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            overflow: hidden;
+        }
+        
+        .question-container {
+            height: 100vh;
+            width: 100%;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 0;
+        }
+        
+        .question-container.active {
+            opacity: 1;
+            z-index: 1;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+            z-index: 10;
+        }
+        
+        .question-content {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .option-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .completion-message {
+            color: #2ecc71;
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        .success-animation {
+            width: 100px;
+            height: 100px;
+            margin: 30px auto;
+            border-radius: 50%;
+            border: 5px solid #2ecc71;
+            position: relative;
+        }
+        
+        .success-animation:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            width: 25%;
+            height: 12%;
+            background-color: #2ecc71;
+            transform: rotate(45deg);
+        }
+        
+        .success-animation:after {
+            content: '';
+            position: absolute;
+            top: 40%;
+            left: 40%;
+            width: 50%;
+            height: 12%;
+            background-color: #2ecc71;
+            transform: rotate(-45deg);
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .question-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <form id="ai-survey-form" name="AI Experience Survey" method="POST" data-netlify="true">
+        <input type="hidden" name="form-name" value="AI Experience Survey">
+        
+        <!-- Question 1: Gender -->
+        <div class="question-container active" id="question1">
+            <div class="question-content">
+                <h2>What is your gender?</h2>
+                <div class="option-group">
+                    <div class="option-item">
+                        <input type="radio" id="male" name="gender" value="Male">
+                        <label for="male">Male</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" id="female" name="gender" value="Female">
+                        <label for="female">Female</label>
+                    </div>
+                </div>
+                <div class="error-message" id="error-gender">Please select your gender</div>
+                <button type="button" class="btn" onclick="nextQuestion(1)">Next</button>
+            </div>
+        </div>
+        
+        <!-- Question 2: AI Experience -->
+        <div class="question-container" id="question2">
+            <div class="question-content">
+                <h2>Have you ever used AI tools?</h2>
+                <div class="option-group">
+                    <div class="option-item">
+                        <input type="radio" id="yes-ai" name="ai_experience" value="Yes">
+                        <label for="yes-ai">Yes</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" id="no-ai" name="ai_experience" value="No">
+                        <label for="no-ai">No</label>
+                    </div>
+                </div>
+                <div class="error-message" id="error-ai_experience">Please select an option</div>
+                <button type="button" class="btn" onclick="nextQuestion(2)">Next</button>
+            </div>
+        </div>
+        
+        <!-- Question 3: AI Tools Knowledge -->
+        <div class="question-container" id="question3">
+            <div class="question-content">
+                <h2>Which AI tools are you familiar with?</h2>
+                <div class="option-group">
+                    <div class="option-item">
+                        <input type="checkbox" id="chatgpt" name="ai_tools" value="ChatGPT">
+                        <label for="chatgpt">ChatGPT</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="claude" name="ai_tools" value="Claude">
+                        <label for="claude">Claude</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="gemini" name="ai_tools" value="Gemini">
+                        <label for="gemini">Gemini</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="copilot" name="ai_tools" value="Copilot">
+                        <label for="copilot">Copilot</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="ideogram" name="ai_tools" value="Ideogram">
+                        <label for="ideogram">Ideogram</label>
+                    </div>
+                </div>
+                <button type="button" class="btn" onclick="nextQuestion(3)">Next</button>
+            </div>
+        </div>
+        
+        <!-- Question 4: Age -->
+        <div class="question-container" id="question4">
+            <div class="question-content">
+                <h2>What is your age?</h2>
+                <input type="number" id="age" name="age" min="18" max="120" required>
+                <div class="error-message" id="error-age">Please enter a valid age (18-120)</div>
+                <button type="button" class="btn" onclick="submitForm()">Submit</button>
+            </div>
+        </div>
+        
+        <!-- Completion Screen -->
+        <div class="question-container" id="completion">
+            <div class="question-content">
+                <div class="success-animation"></div>
+                <h2 class="completion-message">Thank you for completing the survey!</h2>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        const totalQuestions = 4;
+        let currentQuestion = 1;
+        
+        function updateProgressBar() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+        
+        function validateQuestion(questionNumber) {
+            switch(questionNumber) {
+                case 1:
+                    const genderSelected = document.querySelector('input[name="gender"]:checked');
+                    if (!genderSelected) {
+                        document.getElementById('error-gender').style.display = 'block';
+                        return false;
+                    }
+                    document.getElementById('error-gender').style.display = 'none';
+                    return true;
+                    
+                case 2:
+                    const aiExperienceSelected = document.querySelector('input[name="ai_experience"]:checked');
+                    if (!aiExperienceSelected) {
+                        document.getElementById('error-ai_experience').style.display = 'block';
+                        return false;
+                    }
+                    document.getElementById('error-ai_experience').style.display = 'none';
+                    return true;
+                    
+                case 3:
+                    // This field is not required, so always return true
+                    return true;
+                    
+                case 4:
+                    const age = document.getElementById('age').value;
+                    if (!age || age < 18 || age > 120) {
+                        document.getElementById('error-age').style.display = 'block';
+                        return false;
+                    }
+                    document.getElementById('error-age').style.display = 'none';
+                    return true;
+            }
+            return true;
+        }
+        
+        function nextQuestion(questionNumber) {
+            if (!validateQuestion(questionNumber)) {
+                return;
+            }
+            
+            document.getElementById(`question${questionNumber}`).classList.remove('active');
+            currentQuestion++;
+            document.getElementById(`question${currentQuestion}`).classList.add('active');
+            updateProgressBar();
+        }
+        
+        function submitForm() {
+            if (!validateQuestion(4)) {
+                return;
+            }
+            
+            const form = document.getElementById('ai-survey-form');
+            
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(new FormData(form)).toString()
+            })
+            .then(() => {
+                document.getElementById('question4').classList.remove('active');
+                document.getElementById('completion').classList.add('active');
+                updateProgressBar();
+            })
+            .catch(error => console.error('Form submission error:', error));
+        }
+        
+        // Initialize progress bar
+        updateProgressBar();
+    </script>
+</body>
+</html>
