@@ -233,7 +233,7 @@
                 <h2>What is your age?</h2>
                 <input type="number" id="age" name="age" min="18" max="120" required>
                 <div class="error-message" id="error-age">Please enter a valid age (18-120)</div>
-                <button type="button" class="btn" onclick="submitForm()">Submit</button>
+                <button type="submit" class="btn">Submit</button>
             </div>
         </div>
         
@@ -307,19 +307,8 @@
                 return;
             }
             
-            const form = document.getElementById('ai-survey-form');
-            
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(new FormData(form)).toString()
-            })
-            .then(() => {
-                document.getElementById('question4').classList.remove('active');
-                document.getElementById('completion').classList.add('active');
-                updateProgressBar();
-            })
-            .catch(error => console.error('Form submission error:', error));
+            // הטופס יישלח אוטומטית לנטליפיי
+            return true;
         }
         
         // Initialize progress bar
