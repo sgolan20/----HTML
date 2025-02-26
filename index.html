@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Experience Survey</title>
+    <title>סקר חוויית משתמש - בינה מלאכותית</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Heebo', sans-serif;
         }
         
         body {
             overflow: hidden;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
         }
         
         .question-container {
             height: 100vh;
             width: 100%;
-            background-color: #f5f5f5;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -27,268 +30,276 @@
             padding: 20px;
             position: absolute;
             top: 0;
-            left: 0;
+            right: 0;
             opacity: 0;
-            transition: opacity 0.5s ease;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
             z-index: 0;
         }
         
         .question-container.active {
             opacity: 1;
+            visibility: visible;
             z-index: 1;
         }
         
         .progress-bar {
             position: fixed;
             top: 0;
-            left: 0;
-            height: 5px;
-            background-color: #3498db;
-            transition: width 0.3s ease;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(to left, #4CAF50, #8BC34A);
+            border-radius: 0 0 5px 5px;
+            transition: width 0.5s ease;
             z-index: 10;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .question-content {
-            max-width: 500px;
-            width: 100%;
+            max-width: 800px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
         }
         
         h2 {
-            margin-bottom: 30px;
-            color: #333;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            font-size: 2.5em;
+            font-weight: 700;
         }
         
         .option-group {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            margin: 20px 0;
+            align-items: stretch;
+            margin: 30px 0;
             width: 100%;
+            gap: 15px;
         }
         
         .option-item {
-            margin: 10px 0;
+            position: relative;
+            padding: 20px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
             display: flex;
             align-items: center;
         }
-        
-        input[type="radio"],
-        input[type="checkbox"] {
-            margin-right: 10px;
+
+        .option-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        /* מסתיר את כפתורי הרדיו והצ'קבוקסים המקוריים */
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            margin: 0;
+            top: 0;
+            left: 0;
+        }
+
+        /* עיצוב למצב נבחר */
+        .option-item input[type="radio"]:checked + label,
+        .option-item input[type="checkbox"]:checked + label {
+            color: #6e8efb;
+            font-weight: bold;
+        }
+
+        .option-item input[type="radio"]:checked ~ .option-item,
+        .option-item input[type="checkbox"]:checked ~ .option-item {
+            background: rgba(110,142,251,0.1);
+            border: 2px solid #6e8efb;
         }
         
         input[type="number"] {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="number"]:focus {
+            border-color: #6e8efb;
+            box-shadow: 0 0 10px rgba(110,142,251,0.2);
         }
         
         .btn {
-            background-color: #3498db;
+            background: linear-gradient(45deg, #6e8efb, #a777e3);
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 4px;
+            padding: 15px 40px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            transition: background-color 0.3s;
+            font-size: 1.2em;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(110,142,251,0.4);
         }
         
         .btn:hover {
-            background-color: #2980b9;
-        }
-        
-        .completion-message {
-            color: #2ecc71;
-            font-size: 28px;
-            text-align: center;
-        }
-        
-        .success-animation {
-            width: 100px;
-            height: 100px;
-            margin: 30px auto;
-            border-radius: 50%;
-            border: 5px solid #2ecc71;
-            position: relative;
-        }
-        
-        .success-animation:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 25%;
-            width: 25%;
-            height: 12%;
-            background-color: #2ecc71;
-            transform: rotate(45deg);
-        }
-        
-        .success-animation:after {
-            content: '';
-            position: absolute;
-            top: 40%;
-            left: 40%;
-            width: 50%;
-            height: 12%;
-            background-color: #2ecc71;
-            transform: rotate(-45deg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(110,142,251,0.6);
         }
         
         .error-message {
             color: #e74c3c;
-            margin-top: 5px;
-            font-size: 14px;
+            margin-top: 10px;
+            font-size: 0.9em;
             display: none;
         }
         
-        @media (max-width: 768px) {
-            .question-content {
-                width: 90%;
-            }
+        #completion {
+            text-align: center;
+        }
+        
+        #completion h2 {
+            color: #2ecc71;
+        }
+        
+        label {
+            font-size: 1.2em;
+            color: #34495e;
         }
     </style>
 </head>
 <body>
     <div class="progress-bar" id="progressBar"></div>
     
-    <form id="ai-survey-form" name="AI Experience Survey" method="POST" data-netlify="true">
+    <form id="ai-survey-form" name="AI Experience Survey" method="POST" data-netlify="true" action="/thanks.html">
         <input type="hidden" name="form-name" value="AI Experience Survey">
         
-        <!-- Question 1: Gender -->
-        <div class="question-container active" id="question1">
+        <div id="question1" class="question-container active">
             <div class="question-content">
-                <h2>What is your gender?</h2>
+                <h2>האם השתמשת בכלי בינה מלאכותית בעבר?</h2>
                 <div class="option-group">
                     <div class="option-item">
-                        <input type="radio" id="male" name="gender" value="Male">
-                        <label for="male">Male</label>
+                        <input type="radio" id="q1-yes" name="previous_ai_experience" value="yes" required>
+                        <label for="q1-yes">כן</label>
                     </div>
                     <div class="option-item">
-                        <input type="radio" id="female" name="gender" value="Female">
-                        <label for="female">Female</label>
+                        <input type="radio" id="q1-no" name="previous_ai_experience" value="no">
+                        <label for="q1-no">לא</label>
                     </div>
                 </div>
-                <div class="error-message" id="error-gender">Please select your gender</div>
-                <button type="button" class="btn" onclick="nextQuestion(1)">Next</button>
+                <button type="button" class="btn" onclick="nextQuestion(1)">הבא</button>
             </div>
         </div>
         
-        <!-- Question 2: AI Experience -->
-        <div class="question-container" id="question2">
+        <div id="question2" class="question-container">
             <div class="question-content">
-                <h2>Have you ever used AI tools?</h2>
+                <h2>באילו כלי בינה מלאכותית השתמשת?</h2>
                 <div class="option-group">
                     <div class="option-item">
-                        <input type="radio" id="yes-ai" name="ai_experience" value="Yes">
-                        <label for="yes-ai">Yes</label>
+                        <input type="checkbox" id="q2-chatgpt" name="ai_tools" value="ChatGPT">
+                        <label for="q2-chatgpt">ChatGPT</label>
                     </div>
                     <div class="option-item">
-                        <input type="radio" id="no-ai" name="ai_experience" value="No">
-                        <label for="no-ai">No</label>
+                        <input type="checkbox" id="q2-bard" name="ai_tools" value="Bard">
+                        <label for="q2-bard">Google Bard</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="q2-copilot" name="ai_tools" value="Copilot">
+                        <label for="q2-copilot">GitHub Copilot</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="q2-other" name="ai_tools" value="Other">
+                        <label for="q2-other">אחר</label>
                     </div>
                 </div>
-                <div class="error-message" id="error-ai_experience">Please select an option</div>
-                <button type="button" class="btn" onclick="nextQuestion(2)">Next</button>
+                <div class="error-message" id="error-tools">אנא בחר לפחות אפשרות אחת</div>
+                <button type="button" class="btn" onclick="nextQuestion(2)">הבא</button>
             </div>
         </div>
         
-        <!-- Question 3: AI Tools Knowledge -->
-        <div class="question-container" id="question3">
+        <div id="question3" class="question-container">
             <div class="question-content">
-                <h2>Which AI tools are you familiar with?</h2>
+                <h2>באיזו תדירות אתה משתמש בכלי בינה מלאכותית?</h2>
                 <div class="option-group">
                     <div class="option-item">
-                        <input type="checkbox" id="chatgpt" name="ai_tools" value="ChatGPT">
-                        <label for="chatgpt">ChatGPT</label>
+                        <input type="radio" id="q3-daily" name="frequency" value="daily" required>
+                        <label for="q3-daily">יומי</label>
                     </div>
                     <div class="option-item">
-                        <input type="checkbox" id="claude" name="ai_tools" value="Claude">
-                        <label for="claude">Claude</label>
+                        <input type="radio" id="q3-weekly" name="frequency" value="weekly">
+                        <label for="q3-weekly">שבועי</label>
                     </div>
                     <div class="option-item">
-                        <input type="checkbox" id="gemini" name="ai_tools" value="Gemini">
-                        <label for="gemini">Gemini</label>
+                        <input type="radio" id="q3-monthly" name="frequency" value="monthly">
+                        <label for="q3-monthly">חודשי</label>
                     </div>
                     <div class="option-item">
-                        <input type="checkbox" id="copilot" name="ai_tools" value="Copilot">
-                        <label for="copilot">Copilot</label>
-                    </div>
-                    <div class="option-item">
-                        <input type="checkbox" id="ideogram" name="ai_tools" value="Ideogram">
-                        <label for="ideogram">Ideogram</label>
+                        <input type="radio" id="q3-rarely" name="frequency" value="rarely">
+                        <label for="q3-rarely">לעיתים רחוקות</label>
                     </div>
                 </div>
-                <button type="button" class="btn" onclick="nextQuestion(3)">Next</button>
+                <button type="button" class="btn" onclick="nextQuestion(3)">הבא</button>
             </div>
         </div>
         
-        <!-- Question 4: Age -->
-        <div class="question-container" id="question4">
+        <div id="question4" class="question-container">
             <div class="question-content">
-                <h2>What is your age?</h2>
+                <h2>מה הגיל שלך?</h2>
                 <input type="number" id="age" name="age" min="18" max="120" required>
-                <div class="error-message" id="error-age">Please enter a valid age (18-120)</div>
-                <button type="submit" class="btn">Submit</button>
+                <div class="error-message" id="error-age">אנא הכנס גיל תקין (18-120)</div>
+                <button type="submit" class="btn">שלח</button>
             </div>
         </div>
         
-        <!-- Completion Screen -->
-        <div class="question-container" id="completion">
+        <div id="completion" class="question-container">
             <div class="question-content">
-                <div class="success-animation"></div>
-                <h2 class="completion-message">Thank you for completing the survey!</h2>
+                <h2>תודה רבה!</h2>
+                <p>התשובות שלך נשלחו בהצלחה</p>
             </div>
         </div>
     </form>
 
     <script>
-        const totalQuestions = 4;
         let currentQuestion = 1;
         
         function updateProgressBar() {
-            const progress = (currentQuestion / totalQuestions) * 100;
+            const progress = (currentQuestion / 4) * 100;
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
         
         function validateQuestion(questionNumber) {
             switch(questionNumber) {
                 case 1:
-                    const genderSelected = document.querySelector('input[name="gender"]:checked');
-                    if (!genderSelected) {
-                        document.getElementById('error-gender').style.display = 'block';
-                        return false;
-                    }
-                    document.getElementById('error-gender').style.display = 'none';
-                    return true;
-                    
+                    const q1Answers = document.getElementsByName('previous_ai_experience');
+                    return Array.from(q1Answers).some(radio => radio.checked);
+                
                 case 2:
-                    const aiExperienceSelected = document.querySelector('input[name="ai_experience"]:checked');
-                    if (!aiExperienceSelected) {
-                        document.getElementById('error-ai_experience').style.display = 'block';
-                        return false;
-                    }
-                    document.getElementById('error-ai_experience').style.display = 'none';
-                    return true;
-                    
+                    const q2Answers = document.getElementsByName('ai_tools');
+                    const toolsValid = Array.from(q2Answers).some(checkbox => checkbox.checked);
+                    document.getElementById('error-tools').style.display = toolsValid ? 'none' : 'block';
+                    return toolsValid;
+                
                 case 3:
-                    // This field is not required, so always return true
-                    return true;
-                    
+                    const q3Answers = document.getElementsByName('frequency');
+                    return Array.from(q3Answers).some(radio => radio.checked);
+                
                 case 4:
                     const age = document.getElementById('age').value;
-                    if (!age || age < 18 || age > 120) {
-                        document.getElementById('error-age').style.display = 'block';
-                        return false;
-                    }
-                    document.getElementById('error-age').style.display = 'none';
-                    return true;
+                    const ageValid = age >= 18 && age <= 120;
+                    document.getElementById('error-age').style.display = ageValid ? 'none' : 'block';
+                    return ageValid;
             }
-            return true;
+            return false;
         }
         
         function nextQuestion(questionNumber) {
@@ -297,7 +308,7 @@
             }
             
             document.getElementById(`question${questionNumber}`).classList.remove('active');
-            currentQuestion++;
+            currentQuestion = questionNumber + 1;
             document.getElementById(`question${currentQuestion}`).classList.add('active');
             updateProgressBar();
         }
@@ -306,12 +317,9 @@
             if (!validateQuestion(4)) {
                 return;
             }
-            
-            // הטופס יישלח אוטומטית לנטליפיי
             return true;
         }
         
-        // Initialize progress bar
         updateProgressBar();
     </script>
 </body>
